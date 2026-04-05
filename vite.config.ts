@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  base: '/marble-shooter/',
   build: {
     target: 'es2020',
   },
