@@ -19,6 +19,7 @@ import { AimIndicator } from '../ui/AimIndicator';
 import { ParticleExplosion } from '../ui/ParticleExplosion';
 import { Fireworks } from '../ui/Fireworks';
 import { GameOverEffect } from '../ui/GameOverEffect';
+import { SoundManager } from '../ui/SoundManager';
 
 export class GameController {
   private state = GameStateType.TITLE;
@@ -35,6 +36,7 @@ export class GameController {
   private particles: ParticleExplosion;
   private fireworks: Fireworks;
   private gameOverEffect: GameOverEffect;
+  private sound: SoundManager;
 
   private playerMarble: MarblePair | null = null;
   private targetMarble: MarblePair | null = null;
@@ -60,6 +62,7 @@ export class GameController {
     this.particles = new ParticleExplosion(scene);
     this.fireworks = new Fireworks(scene);
     this.gameOverEffect = new GameOverEffect(scene);
+    this.sound = new SoundManager();
 
     // Wire collision events
     this.physics.setCollisionCallback((h1, h2) => {
@@ -118,6 +121,8 @@ export class GameController {
       this.fireworks.stop();
       this.gameOverEffect.stop();
       this.particles.clear();
+      this.sound.stopBgMusic();
+      this.sound.startBgMusic();
       this.hud.hideMessage();
       this.startNewMarble();
       this.enterAimingX();
@@ -153,6 +158,7 @@ export class GameController {
       const { aimX, aimY } = this.aiming.lockY();
       this.aimIndicator.hide();
       this.state = GameStateType.SHOOTING;
+      this.sound.playShoot();
       this.shootMarble(aimX, aimY);
     }
   }
@@ -168,10 +174,13 @@ export class GameController {
     const result: RollingResult = this.collision.evaluate(this.playerMarble);
     if (result === 'hit') {
       this.lastResult = 'hit';
+      this.sound.playHit();
+      this.sound.playExplosion();
       this.spawnHitExplosion();
       this.enterResult();
     } else if (result === 'settled' || result === 'fell_off') {
       this.lastResult = 'miss';
+      this.sound.playMiss();
       this.enterResult();
     }
   }
@@ -230,6 +239,8 @@ export class GameController {
         this.state = GameStateType.WIN;
         this.hud.showPersistentMessage('YOU WIN!');
         this.hud.setInstruction('Press SPACE to play again');
+        this.sound.stopBgMusic();
+        this.sound.playWin();
         this.fireworks.start();
         return;
       }
@@ -248,6 +259,8 @@ export class GameController {
         this.state = GameStateType.GAME_OVER;
         this.hud.showPersistentMessage('GAME OVER');
         this.hud.setInstruction('Press SPACE to try again');
+        this.sound.stopBgMusic();
+        this.sound.playGameOver();
         this.gameOverEffect.start();
         return;
       }
