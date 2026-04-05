@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 import { GameStateType, type MarblePair } from '../types';
 import {
-  SHOOTER_POSITION_X, SHOOTER_POSITION_Z,
   RESULT_DISPLAY_TIME, ROUND_TRANSITION_TIME,
   TARGET_COLORS,
 } from '../constants';
+import { getTableConfig } from '../core/TableConfig';
 import { InputManager } from '../core/InputManager';
 import { PhysicsWorld } from '../core/PhysicsWorld';
 import { AimingSystem } from './AimingSystem';
@@ -299,9 +299,10 @@ export class GameController {
   }
 
   private shootMarble(aimX: number, aimY: number) {
+    const cfg = getTableConfig();
     this.playerMarble = createPlayerMarble(
       this.scene, this.physics,
-      SHOOTER_POSITION_X, SHOOTER_POSITION_Z
+      cfg.shooterX, cfg.shooterZ
     );
     this.physicsSync.add(this.playerMarble.mesh, this.playerMarble.body);
 

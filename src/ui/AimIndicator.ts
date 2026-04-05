@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import {
-  SHOOTER_POSITION_X, SHOOTER_POSITION_Z,
-  TABLE_Y, TABLE_HALF_HEIGHT, TABLE_HALF_DEPTH,
+  TABLE_Y, TABLE_HALF_HEIGHT,
   AIM_ANGLE_MAX, PLAYER_MARBLE_RADIUS,
 } from '../constants';
+import { getTableConfig } from '../core/TableConfig';
 
 export class AimIndicator {
   private line: THREE.Line;
@@ -19,7 +19,7 @@ export class AimIndicator {
 
   constructor(scene: THREE.Scene) {
     this.scene = scene;
-    this.fullLineLength = TABLE_HALF_DEPTH * 2.5;
+    this.fullLineLength = getTableConfig().halfDepth * 2.5;
 
     // Aim direction line
     this.material = new THREE.LineBasicMaterial({ color: 0xff4444, linewidth: 2 });
@@ -64,9 +64,10 @@ export class AimIndicator {
   updatePower(powerValue: number) {
     // powerValue is in [-1, 1], map to [0, 1] for segment length
     const t = (powerValue + 1) / 2;
+    const cfg = getTableConfig();
     const y = TABLE_Y + TABLE_HALF_HEIGHT + PLAYER_MARBLE_RADIUS + 0.006;
-    const startX = SHOOTER_POSITION_X;
-    const startZ = SHOOTER_POSITION_Z;
+    const startX = cfg.shooterX;
+    const startZ = cfg.shooterZ;
 
     const segmentLength = t * this.fullLineLength;
 
@@ -82,9 +83,10 @@ export class AimIndicator {
   update(aimX: number) {
     if (!this.visible) return;
 
+    const cfg = getTableConfig();
     const y = TABLE_Y + TABLE_HALF_HEIGHT + PLAYER_MARBLE_RADIUS + 0.005;
-    const startX = SHOOTER_POSITION_X;
-    const startZ = SHOOTER_POSITION_Z;
+    const startX = cfg.shooterX;
+    const startZ = cfg.shooterZ;
 
     const angle = aimX * AIM_ANGLE_MAX;
 

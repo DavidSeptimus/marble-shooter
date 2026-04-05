@@ -5,6 +5,7 @@ export class HUD {
   private centerEl: HTMLElement;
   private bottomEl: HTMLElement;
   private centerTimeout: ReturnType<typeof setTimeout> | null = null;
+  private touchMode: boolean;
 
   constructor() {
     this.roundEl = document.getElementById('round-display')!;
@@ -12,6 +13,9 @@ export class HUD {
     this.attemptsEl = document.getElementById('hud-top-right')!;
     this.centerEl = document.getElementById('hud-center')!;
     this.bottomEl = document.getElementById('hud-bottom')!;
+    this.touchMode = 'ontouchstart' in window
+      || navigator.maxTouchPoints > 0
+      || matchMedia('(pointer: coarse)').matches;
   }
 
   updateRound(round: number) {
@@ -54,6 +58,7 @@ export class HUD {
   }
 
   setInstruction(text: string) {
-    this.bottomEl.textContent = text;
+    // On touch devices, the button is the affordance — hide text instructions
+    this.bottomEl.textContent = this.touchMode ? '' : text;
   }
 }

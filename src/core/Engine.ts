@@ -2,10 +2,12 @@ import { PHYSICS_TIMESTEP } from '../constants';
 import { SceneSetup } from '../scene/SceneSetup';
 import { PhysicsWorld } from './PhysicsWorld';
 import { InputManager } from './InputManager';
+import { initTableConfig } from './TableConfig';
 import { Table } from '../scene/Table';
 import { Environment } from '../scene/Environment';
 import { GameController } from '../game/GameState';
 import { PhysicsSync } from '../utils/PhysicsSync';
+import { initTouchButton } from '../ui/TouchButton';
 
 export class Engine {
   private sceneSetup: SceneSetup;
@@ -17,9 +19,11 @@ export class Engine {
   private lastTime = 0;
 
   constructor() {
+    initTableConfig(window.innerWidth / window.innerHeight);
     this.sceneSetup = new SceneSetup();
     this.physics = new PhysicsWorld();
     this.input = new InputManager();
+    initTouchButton(this.input);
     this.physicsSync = new PhysicsSync();
 
     // Create scene objects

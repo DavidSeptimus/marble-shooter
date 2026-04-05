@@ -1,6 +1,4 @@
-// Table dimensions (half-extents)
-export const TABLE_HALF_WIDTH = 1.5;
-export const TABLE_HALF_DEPTH = 1.0;
+// Table dimensions (non-aspect-dependent)
 export const TABLE_HALF_HEIGHT = 0.05;
 export const TABLE_Y = 0.75;
 
@@ -25,8 +23,6 @@ export const TARGET_LINEAR_DAMPING = 2.0;
 export const TARGET_ANGULAR_DAMPING = 1.0;
 
 // Shooting
-export const SHOOTER_POSITION_X = 0;
-export const SHOOTER_POSITION_Z = -(TABLE_HALF_DEPTH - 0.15); // near front edge
 export const AIM_ANGLE_MAX = Math.PI / 2; // 90 degrees each side = 180 total
 export const POWER_MIN = 0.5;
 export const POWER_MAX = 10;
@@ -35,12 +31,6 @@ export const POWER_MAX = 10;
 export const BASE_AIM_SPEED = 1.5;
 export const ROUND_SPEED_BONUS = 0;
 export const MARBLE_SPEED_BONUS = 0.1;
-
-// Target placement (back 80% of table)
-export const TARGET_MIN_X = -(TABLE_HALF_WIDTH - 0.15);
-export const TARGET_MAX_X = TABLE_HALF_WIDTH - 0.15;
-export const TARGET_MIN_Z = -(TABLE_HALF_DEPTH * 0.6);
-export const TARGET_MAX_Z = TABLE_HALF_DEPTH - 0.15;
 
 // Game rules
 export const MARBLES_PER_ROUND = 10;

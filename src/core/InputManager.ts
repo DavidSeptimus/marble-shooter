@@ -20,6 +20,14 @@ export class InputManager {
     });
   }
 
+  triggerSpace() {
+    if (!this.spacePressed) {
+      this.spacePressed = true;
+      this.spaceConsumed = false;
+    }
+    setTimeout(() => { this.spacePressed = false; }, 100);
+  }
+
   consumeSpace(): boolean {
     if (this.spacePressed && !this.spaceConsumed) {
       this.spaceConsumed = true;

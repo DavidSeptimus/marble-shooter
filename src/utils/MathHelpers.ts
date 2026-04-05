@@ -1,16 +1,14 @@
-import {
-  TARGET_MIN_X, TARGET_MAX_X,
-  TARGET_MIN_Z, TARGET_MAX_Z,
-} from '../constants';
+import { getTableConfig } from '../core/TableConfig';
 
 export function randomRange(min: number, max: number): number {
   return min + Math.random() * (max - min);
 }
 
 export function randomTargetPosition(): { x: number; z: number } {
+  const cfg = getTableConfig();
   return {
-    x: randomRange(TARGET_MIN_X, TARGET_MAX_X),
-    z: randomRange(TARGET_MIN_Z, TARGET_MAX_Z),
+    x: randomRange(cfg.targetMinX, cfg.targetMaxX),
+    z: randomRange(cfg.targetMinZ, cfg.targetMaxZ),
   };
 }
 

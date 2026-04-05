@@ -1,22 +1,24 @@
 import * as THREE from 'three';
+import { TABLE_Y } from '../constants';
+import { getTableConfig } from '../core/TableConfig';
 
 export class SceneSetup {
   readonly scene: THREE.Scene;
   readonly camera: THREE.PerspectiveCamera;
   readonly renderer: THREE.WebGLRenderer;
+  private readonly fov = 50;
 
   constructor() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x2a1a0e);
 
     this.camera = new THREE.PerspectiveCamera(
-      50,
+      this.fov,
       window.innerWidth / window.innerHeight,
       0.1,
       100
     );
-    this.camera.position.set(0, 3.5, -2.0);
-    this.camera.lookAt(0, 0.75, 0.3);
+    this.updateCameraForTable();
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -51,10 +53,28 @@ export class SceneSetup {
     window.addEventListener('resize', this.onResize);
   }
 
+  private updateCameraForTable() {
+    const cfg = getTableConfig();
+    const aspect = this.camera.aspect;
+    const fovRad = (this.fov * Math.PI) / 180;
+    const padding = 0.4; // world-unit padding around table for floor visibility
+
+    // Compute required camera height to see full table width and depth
+    const requiredForDepth = (cfg.halfDepth + padding) / Math.tan(fovRad / 2);
+    const hFov = 2 * Math.atan(Math.tan(fovRad / 2) * aspect);
+    const requiredForWidth = (cfg.halfWidth + padding) / Math.tan(hFov / 2);
+    const dist = Math.max(requiredForWidth, requiredForDepth);
+
+    // Position camera above and behind the table (player's perspective from -Z)
+    this.camera.position.set(0, dist * 0.85, -dist * 0.5);
+    this.camera.lookAt(0, TABLE_Y, cfg.halfDepth * 0.15);
+  }
+
   private onResize = () => {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.updateCameraForTable();
   };
 
   render() {

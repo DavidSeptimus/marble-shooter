@@ -1,19 +1,21 @@
 import * as THREE from 'three';
 import { PhysicsWorld } from '../core/PhysicsWorld';
 import {
-  TABLE_HALF_WIDTH, TABLE_HALF_DEPTH, TABLE_HALF_HEIGHT, TABLE_Y,
+  TABLE_HALF_HEIGHT, TABLE_Y,
   LIP_HEIGHT, LIP_THICKNESS,
 } from '../constants';
+import { getTableConfig } from '../core/TableConfig';
 
 export class Table {
   readonly mesh: THREE.Group;
 
   constructor(scene: THREE.Scene, physics: PhysicsWorld) {
     this.mesh = new THREE.Group();
+    const { halfWidth, halfDepth } = getTableConfig();
 
     // Outer dimensions include bumper thickness
-    const outerHalfWidth = TABLE_HALF_WIDTH + LIP_THICKNESS * 2;
-    const outerHalfDepth = TABLE_HALF_DEPTH + LIP_THICKNESS * 2;
+    const outerHalfWidth = halfWidth + LIP_THICKNESS * 2;
+    const outerHalfDepth = halfDepth + LIP_THICKNESS * 2;
 
     // Table surface extends to outer edge of bumpers
     const surfaceGeo = new THREE.BoxGeometry(
@@ -48,13 +50,13 @@ export class Table {
     const lipY = TABLE_Y + TABLE_HALF_HEIGHT + LIP_HEIGHT;
     const lips: { hx: number; hy: number; hz: number; x: number; y: number; z: number }[] = [
       // Front lip (-Z) — full outer width
-      { hx: outerHalfWidth, hy: LIP_HEIGHT, hz: LIP_THICKNESS, x: 0, y: lipY, z: -(TABLE_HALF_DEPTH + LIP_THICKNESS) },
+      { hx: outerHalfWidth, hy: LIP_HEIGHT, hz: LIP_THICKNESS, x: 0, y: lipY, z: -(halfDepth + LIP_THICKNESS) },
       // Back lip (+Z) — full outer width
-      { hx: outerHalfWidth, hy: LIP_HEIGHT, hz: LIP_THICKNESS, x: 0, y: lipY, z: TABLE_HALF_DEPTH + LIP_THICKNESS },
+      { hx: outerHalfWidth, hy: LIP_HEIGHT, hz: LIP_THICKNESS, x: 0, y: lipY, z: halfDepth + LIP_THICKNESS },
       // Left lip (-X) — inner depth (between front and back lips)
-      { hx: LIP_THICKNESS, hy: LIP_HEIGHT, hz: TABLE_HALF_DEPTH, x: -(TABLE_HALF_WIDTH + LIP_THICKNESS), y: lipY, z: 0 },
+      { hx: LIP_THICKNESS, hy: LIP_HEIGHT, hz: halfDepth, x: -(halfWidth + LIP_THICKNESS), y: lipY, z: 0 },
       // Right lip (+X) — inner depth (between front and back lips)
-      { hx: LIP_THICKNESS, hy: LIP_HEIGHT, hz: TABLE_HALF_DEPTH, x: TABLE_HALF_WIDTH + LIP_THICKNESS, y: lipY, z: 0 },
+      { hx: LIP_THICKNESS, hy: LIP_HEIGHT, hz: halfDepth, x: halfWidth + LIP_THICKNESS, y: lipY, z: 0 },
     ];
 
     for (const lip of lips) {
