@@ -1,17 +1,50 @@
 export class SoundManager {
   private ctx: AudioContext | null = null;
+  private masterGain: GainNode | null = null;
   private bgGain: GainNode | null = null;
   private bgTimeout: ReturnType<typeof setTimeout> | null = null;
   private bgPlaying = false;
+  private _muted = false;
+  private static readonly STORAGE_KEY = 'marble-shooter-muted';
+
+  constructor() {
+    this._muted = localStorage.getItem(SoundManager.STORAGE_KEY) === '1';
+    const btn = document.getElementById('mute-btn');
+    if (btn) {
+      btn.textContent = this._muted ? '\u{1F507}' : '\u{1F50A}';
+      btn.addEventListener('click', () => this.toggleMute());
+    }
+  }
+
+  get muted() { return this._muted; }
+
+  toggleMute() {
+    this._muted = !this._muted;
+    localStorage.setItem(SoundManager.STORAGE_KEY, this._muted ? '1' : '0');
+    if (this.masterGain) {
+      this.masterGain.gain.value = this._muted ? 0 : 1;
+    }
+    const btn = document.getElementById('mute-btn');
+    if (btn) {
+      btn.textContent = this._muted ? '\u{1F507}' : '\u{1F50A}';
+    }
+  }
 
   private getCtx(): AudioContext {
     if (!this.ctx) {
       this.ctx = new AudioContext();
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.gain.value = this._muted ? 0 : 1;
+      this.masterGain.connect(this.ctx.destination);
     }
     if (this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
     return this.ctx;
+  }
+
+  private get dest(): AudioNode {
+    return this.masterGain || this.getCtx().destination;
   }
 
   // --- Sound Effects ---
@@ -21,7 +54,7 @@ export class SoundManager {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.dest);
 
     osc.type = 'sine';
     osc.frequency.setValueAtTime(300, ctx.currentTime);
@@ -43,7 +76,7 @@ export class SoundManager {
     noiseFilter.Q.value = 0.5;
     noise.connect(noiseFilter);
     noiseFilter.connect(noiseGain);
-    noiseGain.connect(ctx.destination);
+    noiseGain.connect(this.dest);
     noiseGain.gain.setValueAtTime(0.15, ctx.currentTime);
     noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
   }
@@ -55,7 +88,7 @@ export class SoundManager {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.dest);
 
     osc.type = 'triangle';
     osc.frequency.setValueAtTime(800, ctx.currentTime);
@@ -71,7 +104,7 @@ export class SoundManager {
     const ping = ctx.createOscillator();
     const pingGain = ctx.createGain();
     ping.connect(pingGain);
-    pingGain.connect(ctx.destination);
+    pingGain.connect(this.dest);
 
     ping.type = 'sine';
     ping.frequency.setValueAtTime(1400, ctx.currentTime);
@@ -91,7 +124,7 @@ export class SoundManager {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.dest);
 
     osc.type = 'sine';
     osc.frequency.setValueAtTime(150, ctx.currentTime);
@@ -112,7 +145,7 @@ export class SoundManager {
     noiseFilter.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.4);
     noise.connect(noiseFilter);
     noiseFilter.connect(noiseGain);
-    noiseGain.connect(ctx.destination);
+    noiseGain.connect(this.dest);
     noiseGain.gain.setValueAtTime(0.35, ctx.currentTime);
     noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
 
@@ -120,7 +153,7 @@ export class SoundManager {
     const shatter = ctx.createOscillator();
     const shatterGain = ctx.createGain();
     shatter.connect(shatterGain);
-    shatterGain.connect(ctx.destination);
+    shatterGain.connect(this.dest);
     shatter.type = 'square';
     shatter.frequency.setValueAtTime(2000, ctx.currentTime);
     shatter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.2);
@@ -138,7 +171,7 @@ export class SoundManager {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(this.dest);
 
       osc.type = 'sine';
       const startTime = ctx.currentTime + i * 0.12;
@@ -171,7 +204,7 @@ export class SoundManager {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(this.dest);
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, chordTime);
       gain.gain.setValueAtTime(0, chordTime);
@@ -190,7 +223,7 @@ export class SoundManager {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(this.dest);
 
       osc.type = 'triangle';
       const startTime = ctx.currentTime + i * 0.25;
@@ -209,7 +242,7 @@ export class SoundManager {
     const thud = ctx.createOscillator();
     const thudGain = ctx.createGain();
     thud.connect(thudGain);
-    thudGain.connect(ctx.destination);
+    thudGain.connect(this.dest);
     thud.type = 'sine';
     const thudTime = ctx.currentTime + 1.1;
     thud.frequency.setValueAtTime(80, thudTime);
@@ -226,7 +259,7 @@ export class SoundManager {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.dest);
 
     osc.type = 'triangle';
     osc.frequency.setValueAtTime(400, ctx.currentTime);
@@ -262,7 +295,7 @@ export class SoundManager {
     if (!this.bgGain) {
       this.bgGain = ctx.createGain();
       this.bgGain.gain.value = 0.08;
-      this.bgGain.connect(ctx.destination);
+      this.bgGain.connect(this.dest);
     }
 
     // Chill looping ambient melody — pentatonic notes

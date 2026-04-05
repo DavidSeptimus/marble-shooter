@@ -25,7 +25,7 @@ export const TARGET_ANGULAR_DAMPING = 1.0;
 // Shooting
 export const AIM_ANGLE_MAX = Math.PI / 2; // 90 degrees each side = 180 total
 export const POWER_MIN = 0.5;
-export const POWER_MAX = 10;
+export const POWER_MAX = 14;
 
 // Aiming oscillation
 export const BASE_AIM_SPEED = 1.5;

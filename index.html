@@ -31,6 +31,7 @@
       font-size: 24px;
       text-shadow: 0 0 4px rgba(0,0,0,0.8);
       display: flex;
+      align-items: center;
       gap: 8px;
     }
 
@@ -67,9 +68,8 @@
     #touch-btn {
       display: none;
       position: absolute;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
+      bottom: 40px;
+      right: 40px;
       width: 100px;
       height: 100px;
       border-radius: 50%;
@@ -87,9 +87,27 @@
       z-index: 20;
     }
     #touch-btn.pressed {
-      transform: translateX(-50%) scale(1.25);
+      transform: scale(1.25);
       background: rgba(255,255,255,0.35);
     }
+
+    #mute-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      color: #fff;
+      font-size: 18px;
+      pointer-events: auto;
+      cursor: pointer;
+      opacity: 0.8;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      padding: 0;
+      line-height: 28px;
+      text-shadow: 0 0 4px rgba(0,0,0,0.8);
+    }
+    #mute-btn:hover { opacity: 1; }
   </style>
 </head>
 <body>
@@ -99,6 +117,7 @@
       <div id="marble-display">Marble 1 / 10</div>
     </div>
     <div id="hud-top-right">
+      <button id="mute-btn" aria-label="Toggle sound">&#x1F50A;</button>
       <div class="attempt-dot filled"></div>
       <div class="attempt-dot filled"></div>
       <div class="attempt-dot filled"></div>

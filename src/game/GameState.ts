@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GameStateType, type MarblePair } from '../types';
 import {
+  TABLE_Y, TABLE_HALF_HEIGHT,
   RESULT_DISPLAY_TIME, ROUND_TRANSITION_TIME,
   TARGET_COLORS,
 } from '../constants';
@@ -40,6 +41,7 @@ export class GameController {
 
   private playerMarble: MarblePair | null = null;
   private targetMarble: MarblePair | null = null;
+  private targetOrigin: { x: number; z: number } | null = null;
   private timer = 0;
   private lastResult: 'hit' | 'miss' = 'miss';
 
@@ -241,9 +243,8 @@ export class GameController {
   }
 
   private updateNextMarble() {
-    this.cleanupMarbles();
-
     if (this.lastResult === 'hit') {
+      this.cleanupMarbles();
       const outcome = this.roundManager.onHit();
       if (outcome === 'win') {
         this.state = GameStateType.WIN;
@@ -266,6 +267,7 @@ export class GameController {
     } else {
       const outcome = this.roundManager.onMiss();
       if (outcome === 'game_over') {
+        this.cleanupMarbles();
         this.state = GameStateType.GAME_OVER;
         this.hud.showPersistentMessage('GAME OVER');
         this.hud.setInstruction('Press SPACE to try again');
@@ -274,7 +276,9 @@ export class GameController {
         this.gameOverEffect.start();
         return;
       }
-      this.startNewMarble();
+      // Retry: keep target, only reset player and target position
+      this.cleanupPlayerMarble();
+      this.resetTargetPosition();
       this.enterAimingX();
     }
   }
@@ -300,6 +304,7 @@ export class GameController {
 
   private startNewMarble() {
     const pos = randomTargetPosition();
+    this.targetOrigin = { x: pos.x, z: pos.z };
     const radius = this.roundManager.getTargetRadius();
     const color = this.getCurrentTargetColor();
     this.targetMarble = createTargetMarble(
@@ -314,19 +319,33 @@ export class GameController {
     this.shooting.shoot(this.playerMarble, aimX, aimY);
   }
 
-  private cleanupMarbles() {
+  private cleanupPlayerMarble() {
     if (this.playerMarble) {
       this.scene.remove(this.playerMarble.mesh);
       this.physicsSync.remove(this.playerMarble.body);
       this.physics.removeBody(this.playerMarble.body);
       this.playerMarble = null;
     }
+  }
+
+  private cleanupMarbles() {
+    this.cleanupPlayerMarble();
     if (this.targetMarble) {
       this.scene.remove(this.targetMarble.mesh);
       this.physicsSync.remove(this.targetMarble.body);
       this.physics.removeBody(this.targetMarble.body);
       this.targetMarble = null;
     }
+    this.targetOrigin = null;
+  }
+
+  private resetTargetPosition() {
+    if (!this.targetMarble || !this.targetOrigin) return;
+    const radius = this.roundManager.getTargetRadius();
+    const y = TABLE_Y + TABLE_HALF_HEIGHT + radius + 0.001;
+    this.targetMarble.body.setTranslation({ x: this.targetOrigin.x, y, z: this.targetOrigin.z }, true);
+    this.targetMarble.body.setLinvel({ x: 0, y: 0, z: 0 }, true);
+    this.targetMarble.body.setAngvel({ x: 0, y: 0, z: 0 }, true);
   }
 
   private updateHUD() {

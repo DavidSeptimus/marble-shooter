@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { Line2 } from 'three/examples/jsm/lines/Line2.js';
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import {
   TABLE_Y, TABLE_HALF_HEIGHT,
   AIM_ANGLE_MAX, PLAYER_MARBLE_RADIUS,
@@ -6,12 +9,12 @@ import {
 import { getTableConfig } from '../core/TableConfig';
 
 export class AimIndicator {
-  private line: THREE.Line;
-  private geometry: THREE.BufferGeometry;
-  private material: THREE.LineBasicMaterial;
-  private powerLine: THREE.Line;
-  private powerGeometry: THREE.BufferGeometry;
-  private powerMaterial: THREE.LineBasicMaterial;
+  private line: Line2;
+  private geometry: LineGeometry;
+  private material: LineMaterial;
+  private powerLine: Line2;
+  private powerGeometry: LineGeometry;
+  private powerMaterial: LineMaterial;
   private scene: THREE.Scene;
   private visible = false;
   private lockedAngle = 0;
@@ -22,23 +25,36 @@ export class AimIndicator {
     this.fullLineLength = getTableConfig().halfDepth * 2.5;
 
     // Aim direction line
-    this.material = new THREE.LineBasicMaterial({ color: 0xff4444, linewidth: 2 });
-    this.geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(6);
-    this.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    this.line = new THREE.Line(this.geometry, this.material);
+    this.material = new LineMaterial({
+      color: 0xff4444,
+      linewidth: 2,
+      resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
+    });
+    this.geometry = new LineGeometry();
+    this.geometry.setPositions([0, 0, 0, 0, 0, 0]);
+    this.line = new Line2(this.geometry, this.material);
     this.line.visible = false;
     this.scene.add(this.line);
 
     // Power segment (blue overlay on the aim line)
-    this.powerMaterial = new THREE.LineBasicMaterial({ color: 0x3388ff, linewidth: 3, depthTest: false });
-    this.powerGeometry = new THREE.BufferGeometry();
-    const powerPositions = new Float32Array(6);
-    this.powerGeometry.setAttribute('position', new THREE.BufferAttribute(powerPositions, 3));
-    this.powerLine = new THREE.Line(this.powerGeometry, this.powerMaterial);
+    this.powerMaterial = new LineMaterial({
+      color: 0x3388ff,
+      linewidth: 2,
+      resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
+      depthTest: false,
+    });
+    this.powerGeometry = new LineGeometry();
+    this.powerGeometry.setPositions([0, 0, 0, 0, 0, 0]);
+    this.powerLine = new Line2(this.powerGeometry, this.powerMaterial);
     this.powerLine.renderOrder = 1;
     this.powerLine.visible = false;
     this.scene.add(this.powerLine);
+
+    window.addEventListener('resize', () => {
+      const res = new THREE.Vector2(window.innerWidth, window.innerHeight);
+      this.material.resolution = res;
+      this.powerMaterial.resolution = res;
+    });
   }
 
   show() {
@@ -74,10 +90,7 @@ export class AimIndicator {
     const endX = startX + Math.sin(this.lockedAngle) * segmentLength;
     const endZ = startZ + Math.cos(this.lockedAngle) * segmentLength;
 
-    const positions = this.powerGeometry.attributes.position as THREE.BufferAttribute;
-    positions.setXYZ(0, startX, y, startZ);
-    positions.setXYZ(1, endX, y, endZ);
-    positions.needsUpdate = true;
+    this.powerGeometry.setPositions([startX, y, startZ, endX, y, endZ]);
   }
 
   update(aimX: number) {
@@ -93,9 +106,6 @@ export class AimIndicator {
     const endX = startX + Math.sin(angle) * this.fullLineLength;
     const endZ = startZ + Math.cos(angle) * this.fullLineLength;
 
-    const positions = this.geometry.attributes.position as THREE.BufferAttribute;
-    positions.setXYZ(0, startX, y, startZ);
-    positions.setXYZ(1, endX, y, endZ);
-    positions.needsUpdate = true;
+    this.geometry.setPositions([startX, y, startZ, endX, y, endZ]);
   }
 }

@@ -27,12 +27,13 @@ export class HUD {
   }
 
   updateAttempts(remaining: number) {
-    const dots = [];
+    // Remove only the attempt dots, preserve other children (e.g. mute button)
+    this.attemptsEl.querySelectorAll('.attempt-dot').forEach(el => el.remove());
     for (let i = 0; i < 3; i++) {
-      const filled = i < remaining ? 'filled' : '';
-      dots.push(`<div class="attempt-dot ${filled}"></div>`);
+      const dot = document.createElement('div');
+      dot.className = `attempt-dot${i < remaining ? ' filled' : ''}`;
+      this.attemptsEl.appendChild(dot);
     }
-    this.attemptsEl.innerHTML = dots.join('');
   }
 
   showMessage(text: string, duration = 1500) {

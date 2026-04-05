@@ -10,8 +10,10 @@ export class ShootingSystem {
 
     // aimY [-1, 1] -> power (map to [POWER_MIN, POWER_MAX])
     // -1 = min power, +1 = max power
+    // Exponential curve: gentle at low end, aggressive ramp at high end
     const t = (aimY + 1) / 2;
-    const power = lerp(POWER_MIN, POWER_MAX, t);
+    const curved = Math.pow(t, 1.8);
+    const power = lerp(POWER_MIN, POWER_MAX, curved);
 
     // Direction: forward is +Z (toward the back of table)
     const dx = Math.sin(angle);
