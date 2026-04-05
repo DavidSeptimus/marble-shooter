@@ -135,6 +135,16 @@ export class GameController {
     this.aimIndicator.show();
     this.hud.setInstruction('Press SPACE to aim');
     this.updateHUD();
+    this.spawnPlayerMarble();
+  }
+
+  private spawnPlayerMarble() {
+    const cfg = getTableConfig();
+    this.playerMarble = createPlayerMarble(
+      this.scene, this.physics,
+      cfg.shooterX, cfg.shooterZ
+    );
+    this.physicsSync.add(this.playerMarble.mesh, this.playerMarble.body);
   }
 
   private updateAimingX(dt: number) {
@@ -299,13 +309,7 @@ export class GameController {
   }
 
   private shootMarble(aimX: number, aimY: number) {
-    const cfg = getTableConfig();
-    this.playerMarble = createPlayerMarble(
-      this.scene, this.physics,
-      cfg.shooterX, cfg.shooterZ
-    );
-    this.physicsSync.add(this.playerMarble.mesh, this.playerMarble.body);
-
+    if (!this.playerMarble) return;
     this.collision.setup(this.playerMarble, this.targetMarble!);
     this.shooting.shoot(this.playerMarble, aimX, aimY);
   }

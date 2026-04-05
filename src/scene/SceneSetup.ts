@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { TABLE_Y } from '../constants';
 import { getTableConfig } from '../core/TableConfig';
+import { setMarbleEnvMap } from './Marble';
 
 export class SceneSetup {
   readonly scene: THREE.Scene;
@@ -49,6 +50,13 @@ export class SceneSetup {
     const pointLight = new THREE.PointLight(0xffd699, 0.6, 10);
     pointLight.position.set(0, 2.5, 0);
     this.scene.add(pointLight);
+
+    // Generate environment map for marble reflections
+    const pmrem = new THREE.PMREMGenerator(this.renderer);
+    pmrem.compileEquirectangularShader();
+    const envRT = pmrem.fromScene(this.scene, 0, 0.1, 100);
+    setMarbleEnvMap(envRT.texture);
+    pmrem.dispose();
 
     window.addEventListener('resize', this.onResize);
   }
