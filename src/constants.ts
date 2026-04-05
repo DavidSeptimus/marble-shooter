@@ -28,18 +28,18 @@ export const TARGET_ANGULAR_DAMPING = 1.0;
 export const SHOOTER_POSITION_X = 0;
 export const SHOOTER_POSITION_Z = -(TABLE_HALF_DEPTH - 0.15); // near front edge
 export const AIM_ANGLE_MAX = Math.PI / 2; // 90 degrees each side = 180 total
-export const POWER_MIN = 3;
-export const POWER_MAX = 12;
+export const POWER_MIN = 0.5;
+export const POWER_MAX = 10;
 
 // Aiming oscillation
-export const BASE_AIM_SPEED = 3.0;
-export const ROUND_SPEED_BONUS = 0.3;
-export const MARBLE_SPEED_BONUS = 0.05;
+export const BASE_AIM_SPEED = 1.5;
+export const ROUND_SPEED_BONUS = 0;
+export const MARBLE_SPEED_BONUS = 0.1;
 
-// Target placement (back 2/3 of table)
+// Target placement (back 80% of table)
 export const TARGET_MIN_X = -(TABLE_HALF_WIDTH - 0.15);
 export const TARGET_MAX_X = TABLE_HALF_WIDTH - 0.15;
-export const TARGET_MIN_Z = -(TABLE_HALF_DEPTH * 0.33);
+export const TARGET_MIN_Z = -(TABLE_HALF_DEPTH * 0.6);
 export const TARGET_MAX_Z = TABLE_HALF_DEPTH - 0.15;
 
 // Game rules

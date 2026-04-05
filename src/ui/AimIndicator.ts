@@ -30,12 +30,13 @@ export class AimIndicator {
     this.line.visible = false;
     this.scene.add(this.line);
 
-    // Power segment (thicker bright line overlaid on the aim line)
-    this.powerMaterial = new THREE.LineBasicMaterial({ color: 0xffff00, linewidth: 3 });
+    // Power segment (blue overlay on the aim line)
+    this.powerMaterial = new THREE.LineBasicMaterial({ color: 0x3388ff, linewidth: 3, depthTest: false });
     this.powerGeometry = new THREE.BufferGeometry();
     const powerPositions = new Float32Array(6);
     this.powerGeometry.setAttribute('position', new THREE.BufferAttribute(powerPositions, 3));
     this.powerLine = new THREE.Line(this.powerGeometry, this.powerMaterial);
+    this.powerLine.renderOrder = 1;
     this.powerLine.visible = false;
     this.scene.add(this.powerLine);
   }
@@ -76,13 +77,6 @@ export class AimIndicator {
     positions.setXYZ(0, startX, y, startZ);
     positions.setXYZ(1, endX, y, endZ);
     positions.needsUpdate = true;
-
-    // Color: interpolate from red (low) to yellow (mid) to green (high)
-    if (t < 0.5) {
-      this.powerMaterial.color.setHex(0xff4400).lerp(new THREE.Color(0xffff00), t * 2);
-    } else {
-      this.powerMaterial.color.setHex(0xffff00).lerp(new THREE.Color(0x44ff44), (t - 0.5) * 2);
-    }
   }
 
   update(aimX: number) {
