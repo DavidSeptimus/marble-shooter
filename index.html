@@ -55,6 +55,18 @@
     }
     #hud-center.visible { opacity: 1; }
 
+    #hud-byline {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, 28px);
+      font-size: 16px;
+      text-shadow: 0 0 4px rgba(0,0,0,0.8);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      color: #ccc;
+    }
+    #hud-byline.visible { opacity: 0.8; }
+
     #hud-bottom {
       position: absolute;
       bottom: 30px;
@@ -123,6 +135,7 @@
       <div class="attempt-dot filled"></div>
     </div>
     <div id="hud-center"></div>
+    <div id="hud-byline">Created by Joseph Dov Septimus</div>
     <div id="hud-bottom">Press SPACE to start</div>
     <button id="touch-btn" aria-label="Action">GO</button>
   </div>

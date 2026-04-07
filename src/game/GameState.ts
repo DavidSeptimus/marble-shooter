@@ -72,6 +72,7 @@ export class GameController {
     });
 
     this.hud.showPersistentMessage('MARBLE SHOOTER');
+    this.hud.showByline();
     this.hud.setInstruction('Press SPACE to start');
   }
 
@@ -125,6 +126,7 @@ export class GameController {
       this.particles.clear();
       this.sound.stopBgMusic();
       this.sound.startBgMusic();
+      this.hud.hideByline();
       this.hud.hideMessage();
       this.startNewMarble();
       this.enterAimingX();
@@ -298,6 +300,7 @@ export class GameController {
       this.particles.clear();
       this.state = GameStateType.TITLE;
       this.hud.showPersistentMessage('MARBLE SHOOTER');
+      this.hud.showByline();
       this.hud.setInstruction('Press SPACE to start');
     }
   }

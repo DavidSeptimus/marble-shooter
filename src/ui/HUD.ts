@@ -3,6 +3,7 @@ export class HUD {
   private marbleEl: HTMLElement;
   private attemptsEl: HTMLElement;
   private centerEl: HTMLElement;
+  private bylineEl: HTMLElement;
   private bottomEl: HTMLElement;
   private centerTimeout: ReturnType<typeof setTimeout> | null = null;
   private touchMode: boolean;
@@ -12,6 +13,7 @@ export class HUD {
     this.marbleEl = document.getElementById('marble-display')!;
     this.attemptsEl = document.getElementById('hud-top-right')!;
     this.centerEl = document.getElementById('hud-center')!;
+    this.bylineEl = document.getElementById('hud-byline')!;
     this.bottomEl = document.getElementById('hud-bottom')!;
     this.touchMode = 'ontouchstart' in window
       || navigator.maxTouchPoints > 0
@@ -51,6 +53,14 @@ export class HUD {
     if (this.centerTimeout) clearTimeout(this.centerTimeout);
     this.centerEl.textContent = text;
     this.centerEl.classList.add('visible');
+  }
+
+  showByline() {
+    this.bylineEl.classList.add('visible');
+  }
+
+  hideByline() {
+    this.bylineEl.classList.remove('visible');
   }
 
   hideMessage() {
